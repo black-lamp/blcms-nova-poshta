@@ -1,5 +1,5 @@
 <?php
-namespace bl\cms\nova-poshta\frontend\controllers;
+namespace bl\cms\novaposhta\frontend\controllers;
 
 use yii\httpclient\Client;
 use yii\web\BadRequestHttpException;

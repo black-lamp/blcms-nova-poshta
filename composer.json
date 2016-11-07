@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "bl\\cms\\blcms-nova-poshta\\": ""
+      "bl\\cms\\novaposhta\\": ""
     }
   }
 }

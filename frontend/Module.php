@@ -1,12 +1,12 @@
 <?php
-namespace bl\cms\nova-poshta\frontend;
+namespace bl\cms\novaposhta\frontend;
 
 /**
  * @author Albert Gainutdinov <xalbert.einsteinx@gmail.com>
  */
 class Module extends \yii\base\Module
 {
-    public $controllerNamespace = 'bl\cms\nova-poshta\frontend\controllers';
+    public $controllerNamespace = 'bl\cms\novaposhta\frontend\controllers';
 
     public function init()
     {
