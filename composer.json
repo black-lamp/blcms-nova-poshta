@@ -1,0 +1,22 @@
+{
+  "name": "black-lamp/blcms-nova-poshta",
+  "description": "Yii2 module for work with Nova Poshta API",
+  "keywords": ["yii2", "nova poshta", "api", "blcms"],
+  "type": "yii2-extension",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Albert Gainutdinov",
+      "email": "xalbert.einsteinx@gmail.com"
+    }
+  ],
+  "require": {
+    "yiisoft/yii2": ">=2.0.4",
+    "black-lamp/blcms-shop": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "bl\\cms\\blcms-nova-poshta\\": ""
+    }
+  }
+}
