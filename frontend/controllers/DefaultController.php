@@ -1,6 +1,7 @@
 <?php
 namespace bl\cms\novaposhta\frontend\controllers;
 
+use yii\helpers\ArrayHelper;
 use yii\httpclient\Client;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -11,46 +12,33 @@ use yii\web\Controller;
 class DefaultController extends Controller
 {
     /**
-     * This method is used for Nova Poshta widget.
+     * This method makes request to the API.
+     * @property \bl\cms\novaposhta\frontend\Module $module
      *
-     * @param $modelName
-     * @param $calledMethod
-     * @param null $methodProperties
+     * @param string $modelName
+     * @param string $calledMethod
+     * @param array $methodProperties
      * @return string
+     *
+     * @throws BadRequestHttpException
      */
-    private function getResponse($modelName, $calledMethod, $methodProperties = null)
+    private function getResponse($modelName, $calledMethod, $methodProperties = [])
     {
 
-        $data = [
-            'apiKey' => 'b696152fde625f5e9b3c6a7a0318701f',
-            'modelName' => $modelName,
-            'calledMethod' => $calledMethod,
-            'language' => 'ru'
-        ];
-
-//        $post = json_encode($data);
-//
-//        $result = file_get_contents('https://api.novaposhta.ua/v2.0/json/', null, stream_context_create([
-//            'http' => [
-//                'method' => 'POST',
-//                'header' => "Content-type: application/x-www-form-urlencoded;\r\n",
-//                'content' => $post,
-//            ]
-//        ]));
-//
-//        return $result;
+        $data = ArrayHelper::merge(
+            [
+                'apiKey' => $this->module->apiKey,
+                'modelName' => $modelName,
+                'calledMethod' => $calledMethod,
+            ],
+            $methodProperties);
 
         $client = new Client();
         $response = $client->createRequest()
-            ->setFormat(Client::FORMAT_JSON)
+            ->setFormat($this->module->format)
             ->setMethod('post')
-            ->setUrl('https://api.novaposhta.ua/v2.0/json/')
-            ->setData([
-                'apiKey' => 'b696152fde625f5e9b3c6a7a0318701f',
-                'modelName' => 'Address',
-                'calledMethod' => 'getAreas',
-                'language' => 'ru'
-            ])
+            ->setUrl("{$this->module->requestUrl}/{$this->module->apiVersion}/{$this->module->format}/")
+            ->setData($data)
             ->send();
         if ($response->isOk) {
             return $response;
@@ -58,13 +46,24 @@ class DefaultController extends Controller
         else throw new BadRequestHttpException();
     }
 
+    /**
+     * @return string
+     * Gets Ukrainian regions.
+     */
     public function actionGetAreas() {
-        return $this->getResponse('Address', 'getAreas');
+        return $this->getResponse('Address', 'getAreas')->content;
     }
 
     public function actionGetCities() {
-        return $this->getResponse('AddressGeneral', 'getSettlements');
+        $settlements = $this->getResponse('AddressGeneral', 'getSettlements', [
+            'methodProperties' => [
+                "Region" => $_GET['regionRef']
+        ]]);
+        return $settlements->content;
+
     }
+
+
 
     public function actionGetWarehousesFromNp($cityName) {
 
