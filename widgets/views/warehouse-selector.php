@@ -3,42 +3,29 @@
  * @author Albert Gainutdinov <xalbert.einsteinx@gmail.com>
  *
  * @var $language string
- * @var $warehouses->data
+ * @var $warehouses ->data
  * @var $model
  * @var $attribute string
  */
 
 use yii\bootstrap\Html;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+use yii\jui\AutoComplete;
+
 ?>
-<?php /* echo Html::activeDropDownList(
-        $model,
-        $attribute,
-        ArrayHelper::map($areas, 'Ref', 'Description'),
-        [
-            'id' => 'np-areas'
-        ]);
-    */
-?>
-<!--    --><?//= Html::activeDropDownList(
-//        $model,
-//        $attribute,
-//        ArrayHelper::map($warehouses, 'Number', 'DescriptionRu'),
-//        [
-//            'id' => 'useraddress-postoffice'
-//        ]);
-//    ?>
+
 
 <div id="nova-poshta">
 
-    <lable for="area-selector">Area</lable>
-    <select name="area-selector" id="area-selector">
-    </select>
+    <label for="city" ><?= Yii::t('nova-poshta', 'City'); ?></label>
+    <input type="text" name="city" class="form-control" id="np-city"
+           placeholder="<?= Yii::t('nova-poshta', 'Start typing the name of the city'); ?>">
 
-    <lable for="settlement-selector">Settlement</lable>
-    <select name="settlement-selector" id="settlement-selector">
-    </select>
-
+    <?= $form->field($model, 'delivery_post_office')->textInput([
+        'id' => 'np-warehouse',
+        'placeholder' => Yii::t('nova-poshta', 'Start typing the name of the street')
+    ]); ?>
 
 
 

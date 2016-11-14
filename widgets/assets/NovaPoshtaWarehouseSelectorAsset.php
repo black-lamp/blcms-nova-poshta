@@ -19,5 +19,6 @@ class NovaPoshtaWarehouseSelectorAsset extends AssetBundle
     ];
     public $depends = [
         'yii\web\JqueryAsset',
+        'yii\jui\JuiAsset'
     ];
 }

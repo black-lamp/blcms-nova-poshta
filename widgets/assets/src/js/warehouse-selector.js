@@ -1,87 +1,90 @@
 $(document).ready(function() {
-    getAreas();
+    getCity();
 
 });
 
 
-function getAreas() {
-    $.ajax({
-        type: "GET",
-        url: '/nova-poshta/default/get-areas',
-        'success': function (data) {
-            var areaSelector = $('#area-selector');
+function getCity() {
 
-            $($.parseJSON(data).data).each(function(key, value) {
-                areaSelector.append($("<option></option>")
-                    .attr("value", value.Ref)
-                    .text(value.Description));
-            });
+    var cityInput = $('#np-city');
 
-            areaSelector.change(function () {
-                $('#area-selector option:selected').each(function() {
+    //Prevents form submission by Enter key
+    $(cityInput).on('keydown', function(event) {
 
-                    getSettlements(this.value);
-                });
-
-            });
+        if(event.keyCode == 13) {
+            event.preventDefault();
         }
+    });
+
+    cityInput.autocomplete({
+        source: function(request, response){
+
+            var cityInputValue = cityInput.val();
+
+            $.ajax({
+                url: "/nova-poshta/default/get-cities",
+                dataType: "json",
+                data:{
+                    FindByString: cityInputValue
+                },
+                success: function(data){
+
+                    response($.map(data, function(item) {
+
+                        getWarehouse(item.Ref);
+
+                        return {
+                            label: item.Description,
+                            value: item.Description
+                        }
+                    }));
+                },
+                error: function () {
+                    console.log('City autocomplete error');
+                }
+            });
+        },
+        minLength: 4
     });
 }
 
-function getSettlements(areaRef) {
-    $.ajax({
-        type: "GET",
-        url: '/nova-poshta/default/get-cities',
-        data: 'regionRef=' + areaRef,
-        success: function (data) {
+function getWarehouse(cityRef) {
 
-            var settlementSelector = $('#settlement-selector');
-            $(settlementSelector).empty();
+    var warehouseInput = $('#np-warehouse');
 
-            $($.parseJSON(data).data).each(function(key, value) {
-                settlementSelector.append($("<option></option>")
-                    .attr("value", value.Ref)
-                    .text(value.Description));
-            });
+    warehouseInput.focusin(function() {
 
-            settlementSelector.change(function () {
-                $('#settlement-selector option:selected').each(function() {
-                    getSettlements(this.value);
-                });
+        warehouseInput.autocomplete({
+            source: function(request, response){
 
-                var settlementSelector = $('#settlement');
-            });
+                var warehouseInputValue = warehouseInput.val();
 
+                if (warehouseInputValue) {
+                    $.ajax({
+                        url: "/nova-poshta/default/get-warehouses",
+                        dataType: "json",
+                        data:{
+                            CityRef: cityRef,
+                            street: warehouseInputValue
+                        },
+                        success: function(data){
+                            response($.map(data, function(item){
 
-        }
+                                return {
+                                    label: item.Description,
+                                    value: item.Description
+                                }
+                            }));
+                        },
+                        error: function () {
+                            console.log('Warehouses autocomplete error');
+                        }
+                    });
+                }
+
+            },
+            minLength: 1
+        });
     });
+
 }
-
-
-// $(document).ready(function () {
-//     var areaRef = getAreaRef();
-//     pastePostOfficeToField();
-//
-// });
-//
-//
-// /*This function gets post office number from warehouse drop down list and paste it field*/
-// function pastePostOfficeToField() {
-//     var novaPoshtaWidget = $("#nova-poshta");
-//
-//     var postOfficeField = $('#order-delivery_post_office');
-//
-//     $(novaPoshtaWidget).change(function () {
-//         var selectedValue = $("#useraddress-postoffice").val();
-//         $(postOfficeField).val(selectedValue);
-//     });
-// }
-//
-// /*This function gets area ref from areas drop down list*/
-// function getAreaRef() {
-//     var novaPoshtaWidget = $("#nova-poshta");
-//
-//     $(novaPoshtaWidget).change(function () {
-//         return $("#np-areas").val();
-//     });
-// }

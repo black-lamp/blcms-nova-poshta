@@ -10,6 +10,7 @@ use yii\base\Widget;
 class NovaPoshtaWarehouseSelector extends Widget
 {
 
+    public $form;
     public $formModel;
     public $formAttribute;
 
@@ -23,6 +24,7 @@ class NovaPoshtaWarehouseSelector extends Widget
     public function run()
     {
         return $this->render('warehouse-selector', [
+            'form' => $this->form,
             'model' => $this->formModel,
             'attribute' => $this->formAttribute
         ]);
