@@ -68,14 +68,14 @@ class DefaultController extends Controller
      */
     public function actionGetWarehouses() {
 
-        $city = $_GET['street'];
+        $street = $_GET['street'];
 
         $warehouses = $this->getResponse('AddressGeneral', 'getWarehouses',
-            ['CityRef' => $_GET['CityRef']]);
+            ['CityName' => $_GET['CityName']]);
 
         $warehousesByStreet = [];
         foreach ($warehouses->data['data'] as $warehouse) {
-            if (substr_count($warehouse['Description'], $city) != 0 || substr_count($warehouse['DescriptionRu'], $city)) {
+            if (substr_count($warehouse['Description'], $street) != 0 || substr_count($warehouse['DescriptionRu'], $street)) {
                 $warehousesByStreet[] = $warehouse;
             }
         }

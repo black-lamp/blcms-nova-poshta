@@ -30,8 +30,9 @@ function getCity() {
                 success: function(data){
 
                     response($.map(data, function(item) {
+                        console.log(cityInputValue);
 
-                        getWarehouse(item.Ref);
+                        getWarehouse();
 
                         return {
                             label: item.Description,
@@ -48,7 +49,7 @@ function getCity() {
     });
 }
 
-function getWarehouse(cityRef) {
+function getWarehouse() {
 
     var warehouseInput = $('#np-warehouse');
 
@@ -64,7 +65,7 @@ function getWarehouse(cityRef) {
                         url: "/nova-poshta/default/get-warehouses",
                         dataType: "json",
                         data:{
-                            CityRef: cityRef,
+                            CityName: $('#np-city').val(),
                             street: warehouseInputValue
                         },
                         success: function(data){
@@ -72,7 +73,7 @@ function getWarehouse(cityRef) {
 
                                 return {
                                     label: item.Description,
-                                    value: item.Description
+                                    value: item.Description + '(' + item.CityDescription + ')'
                                 }
                             }));
                         },
