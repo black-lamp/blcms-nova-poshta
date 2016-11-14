@@ -1,10 +1,10 @@
 <?php
 namespace bl\cms\novaposhta\frontend\controllers;
 
-use yii\helpers\ArrayHelper;
 use yii\httpclient\Client;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 /**
  * @author Albert Gainutdinov <xalbert.einsteinx@gmail.com>
@@ -21,58 +21,66 @@ class DefaultController extends Controller
      * @return string
      *
      * @throws BadRequestHttpException
+     * @throws NotFoundHttpException
      */
     private function getResponse($modelName, $calledMethod, $methodProperties = [])
     {
 
-        $data = ArrayHelper::merge(
-            [
-                'apiKey' => $this->module->apiKey,
-                'modelName' => $modelName,
-                'calledMethod' => $calledMethod,
-            ],
-            $methodProperties);
+        if (\Yii::$app->request->isAjax) {
+            $data =
+                [
+                    'apiKey' => $this->module->apiKey,
+                    'modelName' => $modelName,
+                    'calledMethod' => $calledMethod,
+                    'methodProperties' => $methodProperties
+                ];
 
-        $client = new Client();
-        $response = $client->createRequest()
-            ->setFormat($this->module->format)
-            ->setMethod('post')
-            ->setUrl("{$this->module->requestUrl}/{$this->module->apiVersion}/{$this->module->format}/")
-            ->setData($data)
-            ->send();
-        if ($response->isOk) {
-            return $response;
+            $client = new Client();
+            $response = $client->createRequest()
+                ->setFormat($this->module->format)
+                ->setMethod('post')
+                ->setUrl("{$this->module->requestUrl}/{$this->module->apiVersion}/{$this->module->format}/")
+                ->setData($data)
+                ->send();
+            if ($response->isOk) {
+                return $response;
+            }
+            else throw new BadRequestHttpException();
         }
-        else throw new BadRequestHttpException();
+        else throw new NotFoundHttpException();
     }
 
     /**
+     * Gets cities, where there are Nova Poshta warehouses.
      * @return string
-     * Gets Ukrainian regions.
      */
-    public function actionGetAreas() {
-        return $this->getResponse('Address', 'getAreas')->content;
-    }
-
     public function actionGetCities() {
-        $settlements = $this->getResponse('AddressGeneral', 'getSettlements', [
-            'methodProperties' => [
-                "Region" => $_GET['regionRef']
-        ]]);
-        return $settlements->content;
 
+        $settlements = $this->getResponse('Address', 'getCities',
+            ['FindByString' => $_GET['FindByString']]);
+
+        return json_encode($settlements->data['data']);
     }
 
+    /**
+     * Gets warehouses by city and street.
+     * @return string
+     */
+    public function actionGetWarehouses() {
 
+        $city = $_GET['street'];
 
-    public function actionGetWarehousesFromNp($cityName) {
+        $warehouses = $this->getResponse('AddressGeneral', 'getWarehouses',
+            ['CityRef' => $_GET['CityRef']]);
 
-//        $cityName = (!empty($cityName)) ? $cityName : $this->defaultCityName;
+        $warehousesByStreet = [];
+        foreach ($warehouses->data['data'] as $warehouse) {
+            if (substr_count($warehouse['Description'], $city) != 0 || substr_count($warehouse['DescriptionRu'], $city)) {
+                $warehousesByStreet[] = $warehouse;
+            }
+        }
 
-        $methodProperties = [
-            'CityName' => $cityName
-        ];
-
-        return $this->getResponse('AddressGeneral', 'getWarehouses', $methodProperties);
+        return json_encode($warehousesByStreet);
     }
+
 }
