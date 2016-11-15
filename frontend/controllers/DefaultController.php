@@ -26,7 +26,7 @@ class DefaultController extends Controller
     private function getResponse($modelName, $calledMethod, $methodProperties = [])
     {
 
-//        if (\Yii::$app->request->isAjax) {
+        if (\Yii::$app->request->isAjax) {
             $data =
                 [
                     'apiKey' => $this->module->apiKey,
@@ -46,8 +46,8 @@ class DefaultController extends Controller
                 return $response;
             }
             else throw new BadRequestHttpException();
-//        }
-//        else throw new NotFoundHttpException();
+        }
+        else throw new NotFoundHttpException();
     }
 
     /**
