@@ -12,7 +12,8 @@
   ],
   "require": {
     "yiisoft/yii2": ">=2.0.4",
-    "black-lamp/blcms-cart": "*"
+    "black-lamp/blcms-cart": "*",
+    "yiisoft/yii2-jui": "*"
   },
   "autoload": {
     "psr-4": {
