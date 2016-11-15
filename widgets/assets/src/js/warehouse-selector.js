@@ -30,8 +30,6 @@ function getCity() {
                 success: function(data){
 
                     response($.map(data, function(item) {
-                        console.log(cityInputValue);
-
                         getWarehouse();
 
                         return {
