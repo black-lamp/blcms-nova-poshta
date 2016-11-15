@@ -26,7 +26,7 @@ class DefaultController extends Controller
     private function getResponse($modelName, $calledMethod, $methodProperties = [])
     {
 
-        if (\Yii::$app->request->isAjax) {
+//        if (\Yii::$app->request->isAjax) {
             $data =
                 [
                     'apiKey' => $this->module->apiKey,
@@ -46,8 +46,8 @@ class DefaultController extends Controller
                 return $response;
             }
             else throw new BadRequestHttpException();
-        }
-        else throw new NotFoundHttpException();
+//        }
+//        else throw new NotFoundHttpException();
     }
 
     /**
@@ -75,7 +75,8 @@ class DefaultController extends Controller
 
         $warehousesByStreet = [];
         foreach ($warehouses->data['data'] as $warehouse) {
-            if (substr_count($warehouse['Description'], $street) != 0 || substr_count($warehouse['DescriptionRu'], $street)) {
+            if (substr_count(mb_strtolower($warehouse['Description']), mb_strtolower($street)) != 0 ||
+                substr_count(mb_strtolower($warehouse['DescriptionRu']), mb_strtolower($street))) {
                 $warehousesByStreet[] = $warehouse;
             }
         }
